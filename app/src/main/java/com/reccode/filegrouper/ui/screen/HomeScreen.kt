@@ -2,6 +2,7 @@ package com.reccode.filegrouper.ui.screen
 
 import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -25,7 +26,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Button
@@ -48,21 +51,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.documentfile.provider.DocumentFile
 import androidx.navigation.NavController
 import com.reccode.filegrouper.util.PreferencesUtil
 import com.reccode.filegrouper.util.loadMdFiles
 import com.reccode.filegrouper.viewmodel.AppViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: AppViewModel) {
     val context = LocalContext.current
     var folderUri by remember { mutableStateOf<Uri?>(null) }
-    var mdFiles by remember { mutableStateOf<List<Pair<String, Uri>>>(emptyList()) }
+    var mdFiles by remember { mutableStateOf<List<Triple<String, Uri, String>>>(emptyList()) }
+
     var showOpenFileButton by remember { mutableStateOf(true) }
 
     val folderPicker = rememberLauncherForActivityResult(
@@ -163,14 +163,7 @@ fun HomeScreen(navController: NavController, viewModel: AppViewModel) {
                             .padding(vertical = 16.dp)
                             .align(Alignment.BottomCenter)
                     ) {
-                        CreateListButton(
-                            folderUri = folderUri,
-                            context = context,
-                            mdFiles = mdFiles,
-                            setMdFiles = { mdFiles = it },
-                            navController = navController,
-                            viewModel = viewModel
-                        )
+                        CreateListButton { folderPicker.launch(null) }
                     }
                 }
             }
@@ -222,31 +215,37 @@ fun SolicitarAcessoCard(
 
 
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileGridView(
-    mdFiles: List<Pair<String, Uri>>,
+    mdFiles: List<Triple<String, Uri, String>>,
     navController: NavController,
     viewModel: AppViewModel
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(6), // ou use Adaptive(100.dp)
-        //columns = GridCells.Adaptive(minSize = 96.dp),
+        columns = GridCells.Fixed(6),
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        items(mdFiles) { (name, uri) ->
-            val isDone = name.startsWith("done_")
-            val icon = if (isDone) Icons.Default.Done else Icons.Filled.List
-            val iconColor = if (isDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+        items(mdFiles) { (name, uri, mimeType) ->
+            val isDirectory = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
+            val icon = when {
+                isDirectory -> Icons.Default.AddCircle
+                else -> Icons.Default.Create
+            }
+            val iconColor = when {
+                isDirectory -> MaterialTheme.colorScheme.tertiary
+                else -> MaterialTheme.colorScheme.secondary
+            }
 
             Column(
                 modifier = Modifier
                     .width(72.dp)
                     .clickable {
                         viewModel.selectFile(uri)
-                        // navController.navigate("edit")
+                        // Aqui você pode decidir o que fazer ao clicar na pasta
                     },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -264,7 +263,6 @@ fun FileGridView(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.width(50.dp)
-
                 )
             }
         }
@@ -272,16 +270,9 @@ fun FileGridView(
 }
 
 @Composable
-fun CreateListButton(
-    folderUri: Uri?,
-    context: android.content.Context,
-    mdFiles: List<Pair<String, Uri>>,
-    setMdFiles: (List<Pair<String, Uri>>) -> Unit,
-    navController: NavController,
-    viewModel: AppViewModel
-) {
+fun CreateListButton( onClick: () -> Unit ) {
     Button(
-        onClick = { },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),

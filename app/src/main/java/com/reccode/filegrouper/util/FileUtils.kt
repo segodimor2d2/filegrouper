@@ -6,32 +6,46 @@ import android.provider.DocumentsContract
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-fun loadMdFiles(context: Context, folderUri: Uri, onFilesLoaded: (List<Pair<String, Uri>>) -> Unit) {
+fun loadMdFiles(
+    context: Context,
+    folderUri: Uri,
+    onResult: (List<Triple<String, Uri, String>>) -> Unit
+) {
+    val contentResolver = context.contentResolver
+
     val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
-        folderUri, DocumentsContract.getTreeDocumentId(folderUri)
+        folderUri,
+        DocumentsContract.getTreeDocumentId(folderUri)
     )
-    val files = mutableListOf<Pair<String, Uri>>()
 
-    context.contentResolver.query(
-        childrenUri,
-        arrayOf(
-            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-            DocumentsContract.Document.COLUMN_DISPLAY_NAME
-        ),
-        null, null, null
-    )?.use { cursor ->
+    val mdFiles = mutableListOf<Triple<String, Uri, String>>()
+
+    val projection = arrayOf(
+        DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+        DocumentsContract.Document.COLUMN_MIME_TYPE,
+        DocumentsContract.Document.COLUMN_DOCUMENT_ID
+    )
+
+    contentResolver.query(childrenUri, projection, null, null, null)?.use { cursor ->
+        val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+        val mimeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
+        val docIdIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
+
         while (cursor.moveToNext()) {
-            val documentId = cursor.getString(0)
-            val displayName = cursor.getString(1)
-            if (displayName.endsWith(".md")) {
-                val fileUri = DocumentsContract.buildDocumentUriUsingTree(folderUri, documentId)
-                files.add(displayName to fileUri)
-            }
+            val name = cursor.getString(nameIndex)
+            val mimeType = cursor.getString(mimeIndex)
+            val documentId = cursor.getString(docIdIndex)
+
+            val fileUri = DocumentsContract.buildDocumentUriUsingTree(folderUri, documentId)
+
+            mdFiles.add(Triple(name, fileUri, mimeType))
         }
     }
 
-    onFilesLoaded(files)
+    onResult(mdFiles)
 }
 
 fun createNewMarkdownFile(context: Context): File {
