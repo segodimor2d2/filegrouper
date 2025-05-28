@@ -1,4 +1,4 @@
-# App Matriz de Condorcet com pesos simplificados
+# App BASE
 
 https://github.com/segodimor2d2/app-hierarchylist
 
