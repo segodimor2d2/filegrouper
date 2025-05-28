@@ -1,4 +1,4 @@
-package com.reccode.ui.theme
+package com.reccode.filegrouper.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

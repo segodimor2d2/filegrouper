@@ -224,3 +224,78 @@ fun TwoButtonsScreen() {
 ```
 
 Lembre-se de importar `androidx.compose.animation.AnimatedVisibility` se usar esta versão.
+
+---
+
+
+
+# Usando Telescope live_grep para Renomear Strings em Múltiplos Arquivos
+
+O `Telescope live_grep` é uma ferramenta poderosa para buscar e substituir strings em vários arquivos. Aqui está como usá-lo para renomear:
+
+## Passo a Passo Básico
+
+1. **Abra o live_grep**:
+   ```vim
+   :Telescope live_grep
+   ```
+   Ou use o atalho (se configurado, normalmente `<leader>fg`)
+
+2. **Digite o termo que deseja buscar** e pressione Enter
+
+3. **Selecione os resultados** que deseja modificar:
+   - Navegue com `j/k` ou setas
+   - Marque múltiplos arquivos com `<Tab>`
+
+4. **Abra todos os selecionados**:
+   Pressione `<C-q>` para abrir todos os resultados marcados na quickfix list
+
+## Fazendo a Substituição
+
+5. **Execute a substituição** em todos os arquivos da quickfix:
+   ```vim
+   :cfdo %s/termo_antigo/termo_novo/gc | update
+   ```
+   - O `c` no final pede confirmação para cada substituição
+   - Remova o `c` se quiser substituir sem confirmação
+
+## Método Alternativo com Telescope + Sed
+
+1. Busque com `live_grep` como acima
+
+2. Pressione `<C-t>` para abrir os resultados em abas
+
+3. Use:
+   ```vim
+   :tabdo %s/termo_antigo/termo_novo/gc | update
+   ```
+
+## Configuração Útil (opcional)
+
+Adicione ao seu `init.lua` para facilitar:
+```lua
+local actions = require('telescope.actions')
+require('telescope').setup({
+  defaults = {
+    mappings = {
+      i = {
+        ['<C-s>'] = actions.send_to_qflist + actions.open_qflist,
+      },
+    },
+  },
+})
+```
+Isso permite pressionar `<C-s>` após a busca para enviar diretamente para a quickfix.
+
+## Dicas
+
+- Use `:Telescope grep_string` para buscar a palavra sob o cursor
+- Combine com `nvim-spectre` para substituições mais avançadas
+- Para projetos grandes, considere usar `rg` ou `ag` como backend para maior velocidade
+
+---
+
+:cfdo %s/termo_antigo/termo_novo/gc | update
+:cfdo %s/com.reccode.ui/termo_antigo.filegrouper/gc | update
+:cfdo %s/termo_antigo.filegrouper/com.reccode.filegrouper.ui./gc | update
+:cfdo %s/com.reccode./com.reccode.filegrouper./gc | update

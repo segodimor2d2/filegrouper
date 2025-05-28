@@ -1,4 +1,4 @@
-package com.reccode.util
+package com.reccode.filegrouper.util
 
 import android.content.Context
 import android.net.Uri

@@ -1,4 +1,4 @@
-package com.reccode.ui.theme
+package com.reccode.filegrouper.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

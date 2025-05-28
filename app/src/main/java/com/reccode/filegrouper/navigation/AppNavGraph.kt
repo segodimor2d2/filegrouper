@@ -1,19 +1,16 @@
-package com.reccode.navigation
+package com.reccode.filegrouper.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.reccode.ui.screen.EditScreen
-import com.reccode.ui.screen.HomeScreen
-import com.reccode.ui.screen.CompareScreen
-import com.reccode.ui.screen.RankingScreen
-import com.reccode.viewmodel.SharedViewModel
+import com.reccode.filegrouper.ui.screen.HomeScreen
+import com.reccode.filegrouper.viewmodel.AppViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    viewModel: SharedViewModel
+    viewModel: AppViewModel
 ) {
     NavHost(
         navController = navController,
@@ -22,30 +19,6 @@ fun AppNavGraph(
         // Tela Home (original)
         composable("home") {
             HomeScreen(
-                navController = navController,
-                viewModel = viewModel
-            )
-        }
-
-        // Tela de Edição (original)
-        composable("edit") {
-            EditScreen(
-                navController = navController,
-                viewModel = viewModel
-            )
-        }
-
-        // Nova tela de Comparation
-        composable("compare") {
-            CompareScreen(
-                navController = navController,
-                viewModel = viewModel
-            )
-        }
-
-        // Nova tela de Ranking
-        composable("ranking") {
-            RankingScreen(
                 navController = navController,
                 viewModel = viewModel
             )

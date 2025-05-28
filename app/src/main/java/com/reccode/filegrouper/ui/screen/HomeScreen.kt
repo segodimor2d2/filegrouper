@@ -1,4 +1,4 @@
-package com.reccode.ui.screen
+package com.reccode.filegrouper.ui.screen
 
 import android.content.Intent
 import android.net.Uri
@@ -50,16 +50,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.documentfile.provider.DocumentFile
 import androidx.navigation.NavController
-import com.reccode.util.PreferencesUtil
-import com.reccode.util.loadMdFiles
-import com.reccode.viewmodel.SharedViewModel
+import com.reccode.filegrouper.util.PreferencesUtil
+import com.reccode.filegrouper.util.loadMdFiles
+import com.reccode.filegrouper.viewmodel.AppViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: SharedViewModel) {
+fun HomeScreen(navController: NavController, viewModel: AppViewModel) {
     val context = LocalContext.current
     var folderUri by remember { mutableStateOf<Uri?>(null) }
     var mdFiles by remember { mutableStateOf<List<Pair<String, Uri>>>(emptyList()) }
@@ -227,7 +227,7 @@ fun SolicitarAcessoCard(
 fun FileGridView(
     mdFiles: List<Pair<String, Uri>>,
     navController: NavController,
-    viewModel: SharedViewModel
+    viewModel: AppViewModel
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(6), // ou use Adaptive(100.dp)
@@ -246,7 +246,7 @@ fun FileGridView(
                     .width(72.dp)
                     .clickable {
                         viewModel.selectFile(uri)
-                        navController.navigate("edit")
+                        // navController.navigate("edit")
                     },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -278,26 +278,10 @@ fun CreateListButton(
     mdFiles: List<Pair<String, Uri>>,
     setMdFiles: (List<Pair<String, Uri>>) -> Unit,
     navController: NavController,
-    viewModel: SharedViewModel
+    viewModel: AppViewModel
 ) {
     Button(
-        onClick = {
-            folderUri?.let { folder ->
-                val formatter = SimpleDateFormat("yyMMddHHmmss", Locale.getDefault())
-                val fileName = formatter.format(Date()) + ".md"
-                val docFolder = DocumentFile.fromTreeUri(context, folder)
-                val newFile = docFolder?.createFile("text/markdown", fileName)
-
-                newFile?.uri?.let { uri ->
-                    context.contentResolver.openOutputStream(uri)?.use { output ->
-                        output.write("".toByteArray())
-                    }
-                    setMdFiles(mdFiles + (fileName to uri))
-                    viewModel.selectFile(uri)
-                    navController.navigate("edit")
-                }
-            }
-        },
+        onClick = { },
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
