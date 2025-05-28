@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.reccode.navigation.AppNavGraph
-import com.reccode.ui.theme.TestfilesTheme
+import com.reccode.ui.theme.FilegrouperTheme
 import com.reccode.viewmodel.SharedViewModel
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         val viewModel: SharedViewModel by viewModels()
 
         setContent {
-            TestfilesTheme {
+            FilegrouperTheme {
                 // 1. NavController deve ser criado dentro do Composition
                 val navController = rememberNavController()
 

@@ -348,7 +348,7 @@ como eu poderia fazer isso?
 
 Profavor analise o seguinte repositório no github:
 
-Profavor analise os arquivos dentro de testfiles no seguiente path /app/src/main/java/com/testfiles do seguinte repositório no github:
+Profavor analise os arquivos dentro de Filegrouper no seguiente path /app/src/main/java/com/Filegrouper do seguinte repositório no github:
 https://github.com/segodimor2d2/app-hierarchylist
 
 
