@@ -1,6 +1,22 @@
 # App Matriz de Condorcet com pesos simplificados
 
+https://github.com/segodimor2d2/filegrouper
 https://github.com/segodimor2d2/app-hierarchylist
+
+
+- mudar icones
+- filtrar por data
+- filtrar por extensão
+- filtrar por tipo MIME
+- filtrar por nome
+- filtrar por tamanho
+- mudar nome do arquivo
+- criar thumbs img/video
+- abrir subpasta
+- icones grouper pontos com cor
+- MVVM
+- injeção de dependência
+
 
 ## Tela 1 Home: 
 1. Botão 

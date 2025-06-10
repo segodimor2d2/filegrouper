@@ -49,9 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.reccode.filegrouper.R
 import com.reccode.filegrouper.util.PreferencesUtil
 import com.reccode.filegrouper.util.loadMdFiles
 import com.reccode.filegrouper.viewmodel.AppViewModel
@@ -230,14 +233,24 @@ fun FileGridView(
             .fillMaxHeight()
     ) {
         items(mdFiles) { (name, uri, mimeType) ->
-            val isDirectory = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
-            val icon = when {
-                isDirectory -> Icons.Default.AddCircle
-                else -> Icons.Default.Create
+
+            val isHidden = name.startsWith(".")
+
+            val typeFile = when {
+                mimeType == DocumentsContract.Document.MIME_TYPE_DIR -> "directory"
+                mimeType.startsWith("image/") -> "image"
+                mimeType.startsWith("video/") -> "video"
+                mimeType.startsWith("text/") || mimeType == "application/json" -> "text"
+                else -> "other"
             }
-            val iconColor = when {
-                isDirectory -> MaterialTheme.colorScheme.tertiary
-                else -> MaterialTheme.colorScheme.secondary
+
+            val (icon, iconColor) = when {
+                isHidden -> R.drawable.ic_launcher_foreground to MaterialTheme.colorScheme.outlineVariant
+                typeFile == "directory" -> R.drawable.folder to MaterialTheme.colorScheme.tertiary
+                typeFile == "image" -> R.drawable.image to MaterialTheme.colorScheme.primary
+                typeFile == "video" -> R.drawable.movie to MaterialTheme.colorScheme.secondary
+                typeFile == "text" -> R.drawable.text to MaterialTheme.colorScheme.surfaceTint
+                else -> R.drawable.file to MaterialTheme.colorScheme.outline
             }
 
             Column(
@@ -250,7 +263,8 @@ fun FileGridView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    imageVector = icon,
+                    // imageVector = icon,
+                    painter = painterResource(icon),
                     contentDescription = name,
                     tint = iconColor,
                     modifier = Modifier
@@ -261,8 +275,12 @@ fun FileGridView(
                     text = name,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.width(50.dp)
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         }
